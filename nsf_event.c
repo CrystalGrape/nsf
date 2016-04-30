@@ -20,6 +20,7 @@ struct msg_queue
 	pthread_mutex_t sem_mutex;					 //信号互斥量
 }mq;
 
+//消息队列平衡方法
 void nsf_mq_balance()
 {
 	if(mq.flag < -10){
@@ -36,6 +37,7 @@ void nsf_mq_balance()
 		mq.dynamic = mq.max;
 }
 
+//事件表初始化
 void nsf_event_init(int core)
 {
 	int i;
