@@ -7,8 +7,8 @@
 1.在modules目录下添加一个test.c文件，包含头文件#include "nsf_event.h"   
 2.nsf模块需要必须实现一个消息回调函数，函数定义如下   
 	void onRecv(int event,NsfntPkg pkg);   
-3.nsf采用事件驱动机制，但是使用的事件号有限支持0-100,0号事件是框架内   
-保留事件，表示收到数据。   
+3.nsf采用事件驱动机制，但是使用的事件号有限支持0-100,0-2号事件是框架内   
+保留事件，0表示连接，1表示收到数据，2表示断开连接。   
 4.比如我们创建一个收到消息，回发的事件处理   
 	 void onRecv(int event,NsfntPkg pkg)   
 	 {   
@@ -25,3 +25,6 @@
 	  	gcc -c test.c ${INC}  
    add标签后加入 test.o   
 8.回到根目录，make编译   
+##v1.1 改动
+nsf_epoll.c：将epoll套接字设置为全局变量，改变了对epoll套接字修改的方式  
+在接收到连接和断开连接都向事件表发送了响应事件 
