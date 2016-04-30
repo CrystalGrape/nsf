@@ -2,5 +2,7 @@
 extern void onRecv(int event,NsfntPkg pkg);
 void nsf_module_init()
 {
-	nsf_register_event(0,onRecv);
+	nsf_register_event(NE_RECV,onRecv);
+	nsf_register_event(NE_ACPT,onRecv);
+	nsf_register_event(NE_QUIT,onRecv);
 }

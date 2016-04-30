@@ -9,9 +9,11 @@
 #include <sys/shm.h>
 #include <sys/prctl.h>
 
+//0 用户连接 1 收到数据 2 用户退出
 sem_t *sem;     	//监听套接字互斥信号量
 sem_t *sem_write;	//共享互斥信号量
 int shmid;      	//共享内存id
+int epollfd;		//epoll套接字集合
 
 extern void nsf_module_init(); 
 /*设置套接字非阻塞*/
@@ -28,18 +30,16 @@ int setnoblocking(int fd)
 }
 
 /*把套接字加入到监听队列*/
-void Add2Epoll(int epollfd,int fd)
+void nsf_add_epoll(int fd)
 {
 	struct epoll_event ev;
-	//if(blk)
-		//setnoblocking(fd);
 	ev.data.fd = fd;
     ev.events = EPOLLIN;
     epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev);
 }
 
 /*从监听队列去掉套接字*/
-int DelformEpoll(int epollfd,int client)
+int nsf_delete_epoll(int client)
 {
 	struct epoll_event event_del;  
 	event_del.data.fd = client;
@@ -56,7 +56,6 @@ void nsf_epoll_loop(int listenfd, int core)
 	socklen_t sin_size;	
 	struct sockaddr_in addr_c;					//客户端地址
 	int len;
-	int epollfd;								//epoll套接字集合
 	struct epoll_event events[MAXEVENTS];		//epoll事件集合
 	NsfntPkg pkg;								//消息包
 	
@@ -69,7 +68,7 @@ void nsf_epoll_loop(int listenfd, int core)
 		
 		if(all_cfd >= own_cfd*core || all_cfd == 0){
 			if(sem_trywait(sem) == 0){
-				Add2Epoll(epollfd, listenfd);
+				nsf_add_epoll(listenfd);
 			}
 		}
 		
@@ -77,11 +76,12 @@ void nsf_epoll_loop(int listenfd, int core)
     	for(i = 0; i < nfds; i++){
     		//有客户端链接
     		if(listenfd==events[i].data.fd){
+    			memset(&pkg, 0, sizeof(pkg));
     			int cfd=accept(listenfd, (struct sockaddr *)&addr_c, &sin_size);
-    			if(cfd==-1)
+    			if(cfd == -1)
     				continue;
-    			Add2Epoll(epollfd, cfd);
-    			DelformEpoll(epollfd, listenfd);
+    			nsf_add_epoll(cfd);
+    			nsf_delete_epoll(listenfd);
     			
     			//增加用户总套接字
     			all_cfd = nsf_read_user();
@@ -89,7 +89,12 @@ void nsf_epoll_loop(int listenfd, int core)
     			nsf_write_user(all_cfd);
     			own_cfd++;
     			sem_post(sem);
-
+				
+				//发送一个连接事件
+    			pkg.cfd = cfd;
+    			pkg.msg = NE_ACPT;
+    			nsf_post_event(NE_ACPT, pkg);
+    			
                 continue;
     		}
     		
@@ -99,7 +104,7 @@ void nsf_epoll_loop(int listenfd, int core)
     			int tmpfd=events[i].data.fd;
     			len=read(events[i].data.fd,pkg.data,BUFFER_LEN);
     			if(len<=0){
-    				DelformEpoll(epollfd, tmpfd);
+    				nsf_delete_epoll(tmpfd);
 					close(tmpfd);
 					
 					//总用户套接字减少
@@ -107,14 +112,20 @@ void nsf_epoll_loop(int listenfd, int core)
 					all_cfd--;
 					nsf_write_user(all_cfd);
 					own_cfd--;
-			
+					
+					//发送用户退出事件
+					pkg.cfd = tmpfd;
+					pkg.msg = NE_QUIT;
+					nsf_post_event(NE_QUIT, pkg);
+    			
     				continue;
     			}
+    			//发送数据接收事件
     			pkg.data[len] = '\0';
     			pkg.datalen = len;
     			pkg.cfd = tmpfd;
-    			pkg.msg = 0;
-    			nsf_post_event(0, pkg);
+    			pkg.msg = NE_RECV;
+    			nsf_post_event(NE_RECV, pkg);
     			continue;
     		}
     	}
