@@ -10,18 +10,18 @@
 3.nsf采用事件驱动机制，但是使用的事件号有限支持0-100,0号事件是框架内   
 保留事件，表示收到数据。   
 4.比如我们创建一个收到消息，回发的事件处理   
-	>void onRecv(int event,NsfntPkg pkg)   
-	>{   
-	>>	if(event == 0)     
-	>>		write(pkg.cfd, pkg.data, pkg.datalen);   
-	>}   
+	 void onRecv(int event,NsfntPkg pkg)   
+	 {   
+	  	if(event == 0)     
+	  		write(pkg.cfd, pkg.data, pkg.datalen);   
+	 }   
 5.写完后保存文件，打开module_init.c，添加   
-	>extern void onRecv(int event,NsfntPkg pkg);   
+	 extern void onRecv(int event,NsfntPkg pkg);   
 6.在void nsf_module_init()函数中添加   
-	>nsf_register_event(0,onRecv);   
-  >保存   
+   nsf_register_event(0,onRecv);   
+保存   
 7.修改Makefile加入   
-	>test.o:   
-	>>	gcc -c test.c ${INC}  
-  >add标签后加入 test.o   
+	 test.o:   
+	  	gcc -c test.c ${INC}  
+   add标签后加入 test.o   
 8.回到根目录，make编译   
