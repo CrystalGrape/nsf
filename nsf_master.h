@@ -14,10 +14,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NM_CONNECT	0
-#define NM_NOTICE	1
-#define NM_CLOSE	2
-
+#define NM_CONNECT	101
+#define NM_NOTICE	102
+#define NM_CLOSE	103
+#define NM_ADDUSER	104
+#define NM_CMD		105
+	
 #pragma pack(push)
 #pragma pack(1)
 struct nsf_notification_message

@@ -111,7 +111,7 @@ void nsf_epoll_loop(int listenfd, int core)
     			pkg.cfd = cfd;
     			pkg.msg = NE_ACPT;
     			nsf_post_event(NE_ACPT, pkg);
-    			
+    			nsf_post_msg(NM_ADDUSER, pkg);
                 continue;
     		}
     		

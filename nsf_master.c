@@ -114,6 +114,9 @@ void nsf_srvepoll()
 void nsf_default_msgproc(struct nsf_notification_message msg)
 {
 	int i;
+	char cmd[20];
+	memset(cmd,0,20);
+	int state[100];
 	switch(msg.message)
 	{
 	case NM_CONNECT:
@@ -126,8 +129,30 @@ void nsf_default_msgproc(struct nsf_notification_message msg)
 			}
 		}
 		break;
+	case NM_ADDUSER:
+		for(i = 0; i < nsf_worker_amount; i++){
+			if(nsf_worker_map[i].state == 1 
+			&&nsf_worker_map[i].nsf_worker_pid == msg.srcpid){
+				nsf_worker_map[i].nsf_client_amount++;
+				break;
+			}
+		}
+		break;
 	case NM_NOTICE:
 		nsf_notification(msg.destpid, msg);
+		break;
+	case NM_CMD:
+		memcpy(cmd, msg.pkg.data, msg.pkg.datalen);
+		if(strcmp(cmd, "state") == 0)
+		{
+			for(i = 0; i < nsf_worker_amount; i++){
+				state[i*2] = nsf_worker_map[i].nsf_worker_pid;
+				state[i*2+1] = nsf_worker_map[i].nsf_client_amount;
+			}
+		}
+		memcpy(msg.pkg.data, state, 2*nsf_worker_amount*sizeof(int));
+		msg.pkg.datalen=2*nsf_worker_amount*sizeof(int);
+		write(msg.srcfd, &msg,sizeof(msg));
 		break;
 	case NM_CLOSE:
 		nsf_notification(0, msg);

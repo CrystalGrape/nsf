@@ -45,5 +45,5 @@ void nsf_post_msg(int message, NsfntPkg pkg)
 	msg.srcpid = getpid();
 	msg.srcfd = 0;
 	memcpy(&(msg.pkg), &pkg, sizeof(pkg));
-	write(nsf_worker_client, (char *)&pkg, sizeof(pkg));
+	write(nsf_worker_client, (char *)&msg, sizeof(msg));
 }
