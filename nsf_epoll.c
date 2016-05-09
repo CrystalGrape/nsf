@@ -1,5 +1,6 @@
 #include "nsf_epoll.h"
 #include "nsf_event.h"
+#include "nsf_master.h"
 #include <signal.h>
 #include <sys/wait.h>
 #include <semaphore.h>
@@ -58,11 +59,19 @@ void nsf_epoll_loop(int listenfd, int core)
 	int len;
 	struct epoll_event events[MAXEVENTS];		//epoll事件集合
 	NsfntPkg pkg;								//消息包
+	int noticefd;								//通知频道
+	struct nsf_notification_message msg;
 	
-	
+	noticefd = nsf_create_workerclt();
+	if(noticefd < 0)
+		exit(0);
 	epollfd=epoll_create(MAXFD);
-	while(1){
+	nsf_add_epoll(noticefd);
 	
+	memset(&pkg, 0, sizeof(pkg));
+	nsf_post_msg(NM_CONNECT, pkg);
+	
+	while(1){
 		//如果抢到信号量,则将监听套接字加入epoll中
 		all_cfd = nsf_read_user();
 		
@@ -74,6 +83,14 @@ void nsf_epoll_loop(int listenfd, int core)
 		
     	int nfds = epoll_wait(epollfd, events, MAXEVENTS, 200);
     	for(i = 0; i < nfds; i++){
+    		if(noticefd == events[i].data.fd){
+    			memset(&msg, 0, sizeof(msg));
+    			len=read(noticefd,&msg,sizeof(msg));
+    			if(len < 0)
+    				continue;
+    			nsf_default_workerproc(msg);
+    			continue;
+    		}
     		//有客户端链接
     		if(listenfd==events[i].data.fd){
     			memset(&pkg, 0, sizeof(pkg));
@@ -153,6 +170,7 @@ void nsf_start_epoll(int sfd, int core)
 {
 	int pid;
 	if((pid=fork())==0){
+		nsf_close_mastersrv();
 		prctl(PR_SET_NAME, "nsf_worker", NULL, NULL, NULL);
 		nsf_event_init(core);
 		nsf_module_init();
@@ -171,7 +189,7 @@ void nsf_start_master(int sfd, int core)
 		if(nsf_check_exit()){
 			nsf_start_epoll(sfd, core);
 		}
-		sleep(1);
+		nsf_srvepoll();
 	}
 }
 
@@ -188,7 +206,6 @@ int nsf_start_worker(int sfd, int core)
 	}
 	
 	nsf_write_user(0);
-	
 	for(i = 0; i < core; i++){
 		nsf_start_epoll(sfd, core);
 	}

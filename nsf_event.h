@@ -15,7 +15,7 @@ typedef struct
 	int msg;					//消息号
 	int cfd;					//来源套接字
 	int datalen;				//数据长度
-	char data[BUFFER_LEN];			//数据
+	char data[BUFFER_LEN];		//数据
 }NsfntPkg;
 #pragma pack(pop)
 

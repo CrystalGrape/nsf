@@ -1,6 +1,7 @@
 #include "nsf_event.h"
 #include "nsf_epoll.h"
 #include "nsf_config.h"
+#include "nsf_master.h"
 #include <stdio.h>
 #include <memory.h>
 #include <stdlib.h>
@@ -26,14 +27,14 @@ void init_daemon()
 
 	for(i=0;i< NOFILE;++i)
 		close(i);
-	chdir("/home/program/nsf");
+	chdir("/var/");
 	umask(0);
 	return;
 }
 
 int main()
 {
-	init_daemon();
+	//init_daemon();
 	int serverfd;
 	struct nsf_config cfg;
 
@@ -44,14 +45,20 @@ int main()
 	//服务器初始化
 	serverfd = nsf_server_init(cfg.port);
 	
-	if(serverfd < 0)
+	if(serverfd < 0){
 		return -2;
-		
+	}
 	//判断是否单核运行
 	if(cfg.single){
+		if(nsf_create_mastersrv(1) < 0)
+			return 0;
+
 		if(nsf_start_worker(serverfd, 1) == 0)
 			nsf_start_master(serverfd, 1);
 	}else{
+		if(nsf_create_mastersrv(cfg.core*2) < 0)
+			return 0;
+			
 		if(nsf_start_worker(serverfd, cfg.core*2) == 0)
 			nsf_start_master(serverfd, cfg.core*2);
 	}

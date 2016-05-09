@@ -1,16 +1,21 @@
 LD=-lpthread
-all:nsf.o nsf_config.o nsf_signal.o nsf_epoll.o nsf_event.o module
-	gcc -g -o nsf *.o modules/*.o ${LD}
+DEBUG = -g
+all:nsf.o nsf_config.o nsf_signal.o nsf_epoll.o nsf_event.o nsf_master.o nsf_worker.o module
+	gcc $(DEBUG) -o nsf *.o modules/*.o ${LD}
 nsf.o:
-	gcc -c nsf.c
+	gcc $(DEBUG) -c nsf.c
 nsf_signal.o:
-	gcc -c nsf_signal.c
+	gcc $(DEBUG) -c nsf_signal.c
 nsf_epoll.o:
-	gcc -c nsf_epoll.c
+	gcc $(DEBUG) -c nsf_epoll.c
 nsf_config.o:
-	gcc -c nsf_config.c
+	gcc $(DEBUG) -c nsf_config.c
 nsf_event.o:
-	gcc -c nsf_event.c
+	gcc $(DEBUG) -c nsf_event.c
+nsf_master.o:
+	gcc $(DEBUG) -c nsf_master.c
+nsf_worker.o:
+	gcc $(DEBUG) -c nsf_worker.c
 module:
 	make -C modules/
 clean:
