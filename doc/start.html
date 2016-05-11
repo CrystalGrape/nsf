@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>开始使用nsf</title>
+</head>
+<body>
+<h1>nsf简介</h1>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;nsf（ni server framework）Ni服务器框架是一款基于epoll的I/O复用TCP服务器，
+系统架构采用的是多进程方式，由一个master进程产生一个服务器套接字，根据配置
+可以生成多个worker进程，每一个worker都是一个epoll循环，通过抢夺信号量来取得
+服务器监听套接字的使用权，为了使每个进程的负载均衡，我们通过计算每个worker的
+连接数量不得大于总连接数量的 1/(内核数量*2）。<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;nsf采用的是事件驱动机制，需要注意的是，这个事件的传递只能在同一个worker
+进程内进行，如果需要在多个进程间传递消息，需要使用其他的办法，这个后面会介绍。
+nsf的事件号是一个整形的数，nsf的事件号定义也是有范围的，nsf的事件号必须在0-100
+之间超过这个范围无效。到前位置0到2号事件是<a href="eventid.html" >系统保留的事件号</a>,
+通过产生不同的事件，调用不同的模块，从而实现业务逻辑。nsf只提供了数据接入层代码，
+所有的业务逻辑和数据库访问都需要用户<a href="addmod.html" >添加worker模块</a>实现。<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp; 由于不同worker进程拥有不同的客户端，为了方便worker进程之间进行通信
+我们提供了一个基于socket的消息通知机制。通知使用消息号来标示不同消息，消息号从
+101号开始，系统预定义了6个<a href="msgid.html" >系统消息</a>。框架内对每个消息都
+实现了默认的处理，如果用户需要自定义消息处理，需要<a href="addmod.html" >添加master模块</a>。</p>
+<h1>其他链接</h1>
+ <a href="codestyle.html" >代码风格</a> <br>
+<a href="apidoc.html" >API接口</a>
+</body>
+</html>

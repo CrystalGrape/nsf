@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>系统消息号定义</title>
+</head>
+<body>
+<a href="start.html" >主页</a><br>
+<center>
+<table border="1" align="center">
+	<tr>
+		<th>消息</th>
+		<th>消息号</th>
+		<th>解释</th>
+	</tr>
+	<tr>
+		<td>NM_CONNECT</td>	
+		<td>101</td>	
+		<td>一个worker进程连接进来</td>	
+	</tr>
+	<tr>
+		<td>NM_NOTICE</td>	
+		<td>102</td>	
+		<td>接收到一个通知，一般用于不同worker间进行通信</td>	
+	</tr>
+	<tr>
+		<td>NM_CLOSE</td>	
+		<td>103</td>	
+		<td>系统关闭消息，这个消息一般又管理工具发出，收到这个消息后，服务器会自动关闭</td>	
+	</tr>
+	<tr>
+		<td>NM_ADDUSER</td>	
+		<td>104</td>	
+		<td>worker进程连接了一个新的用户</td>	
+	</tr>
+	<tr>
+		<td>NM_DELUSER</td>	
+		<td>105</td>	
+		<td>worker进程一个用户断开了连接</td>	
+	</tr>
+	<tr>
+		<td>NM_CMD</td>	
+		<td>106</td>	
+		<td>命令消息，一般由管理工具发出，具体的命令会存放到pkg 的data字段</td>	
+	</tr>
+</table>
+</center>
+</body>
+</html>

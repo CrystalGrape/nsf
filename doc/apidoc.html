@@ -1,0 +1,356 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>API文档</title>
+</head>
+<body>
+<a name="top" id="top"></a>
+<a href="start.html" >主页</a><br>
+<h1>目录</h1>
+<ul>
+<li><a href="#msg" >消息通知API</a></li>
+<li><a href="#event" >事件通知API</a></li>
+</ul>
+<br>
+<br>
+<h1 id="msg">消息通知API</h1><a href="#top">返回顶部</a><br>
+<ul>
+	<li><a href="#nsf_fork_amount" >int nsf_fork_amount();</a></li>
+	<li><a href="#nsf_register_msgproc" >int nsf_register_msgproc(NsfftMsgproc cblk);</a></li>
+	<li><a href="#nsf_srvepoll" >void nsf_srvepoll();</a></li>
+	<li><a href="#nsf_create_mastersrv" >int nsf_create_mastersrv(int core);</a></li>
+	<li><a href="#nsf_close_mastersrv" >void nsf_close_mastersrv();</a></li>
+	<li><a href="#nsf_notification" >void nsf_notification(int pid, struct nsf_notification_message msg);</a></li>
+	<li><a href="#nsf_add_srvepoll" >void nsf_add_srvepoll(int fd);</a></li>
+	<li><a href="#nsf_delete_srvepoll" >int nsf_delete_srvepoll(int client);</a></li>
+	<li><a href="#nsf_default_msgproc" >void nsf_default_msgproc(struct nsf_notification_message msg);</a></li>
+	<li><a href="#nsf_create_workerclt" >int nsf_create_workerclt();</a></li>
+	<li><a href="#nsf_default_workerproc" >void nsf_default_workerproc(struct nsf_notification_message msg);</a></li>
+	<li><a href="#nsf_post_msg" >void nsf_post_msg(int message, NsfntPkg pkg);</a></li>
+</ul>
+<!-- 消息通知API -->
+<a name="nsf_fork_amount" id="nsf_fork_amount"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_fork_amount</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>int nsf_fork_amount();</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>无</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>返回工作进程数量</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>获取工作进程数量</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_register_msgproc" id="nsf_register_msgproc"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_register_msgproc</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>int nsf_register_msgproc(NsfftMsgproc cblk);</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>通知消息处理回调函数</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>成功返回0，失败返回1</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>通知模块注册</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_srvepoll" id="nsf_srvepoll"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_srvepoll</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>void nsf_srvepoll();</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>无</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>无</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>通知服务器循环</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_create_mastersrv" id="nsf_create_mastersrv"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_create_mastersrv</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>int nsf_create_mastersrv(int core);</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>worker进程数量数量</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>成功返回一个大于0的服务器套接字，失败返回小于等于0</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>创建通知服务器</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_close_mastersrv" id="nsf_close_mastersrv"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_close_mastersrv</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>void nsf_close_mastersrv();</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>无</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>无</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>关闭通知服务器套接字，一般在子进程中调用</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_notification" id="nsf_notification"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_notification</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>void nsf_notification(int pid, struct nsf_notification_message msg);</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>子进程号，通知消息结构</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>无</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>只能在master中调用，用于向指定进程发送通知，当pid为0表示向所有子进程发送通知</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_add_srvepoll" id="nsf_add_srvepoll"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_add_srvepoll</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>void nsf_add_srvepoll(int fd);</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>套接字</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>无</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>将指定套接字加入到通知服务器监听中</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_delete_srvepoll" id="nsf_delete_srvepoll"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_delete_srvepoll</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>int nsf_delete_srvepoll(int client);</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>套接字</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>无</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>将指定套接字从通知服务器监听中删除</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_default_msgproc" id="nsf_default_msgproc"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_default_msgproc</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>void nsf_default_msgproc(struct nsf_notification_message msg);</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>通知消息结构体</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>无</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>默认消息回调函数，如果定义了master模块，必须在最后调用这个函数</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_create_workerclt" id="nsf_create_workerclt"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_create_workerclt</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>int nsf_create_workerclt();</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>无</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>成功返回一个大于0的服务器套接字，失败返回小于等于0</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>创建一个消息通知客户端，在worker中调用</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_default_workerproc" id="nsf_default_workerproc"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_default_workerproc</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>void nsf_default_workerproc(struct nsf_notification_message msg);</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>通知消息结构</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>无</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>worker进程消息处理回调函数</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_post_msg" id="nsf_post_msg"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_post_msg</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>void nsf_post_msg(int message, NsfntPkg pkg);</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>消息号，数据包</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>无</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>向master推送一个消息通知</td>
+	</tr>
+</table>
+<br>
+<h1 id="event">事件通知API</h1><a href="#top">返回顶部</a><br>
+<ul>
+	<li><a href="#nsf_event_init" >void nsf_event_init(int core);</a></li>
+	<li><a href="#nsf_register_event" >int nsf_register_event(int event, NsfftEvent cblk);</a></li>
+	<li><a href="#nsf_call_event" >int nsf_call_event(int event, NsfntPkg pkg);</a></li>
+	<li><a href="#nsf_post_event" >int nsf_post_event(int event, NsfntPkg pkg);</a></li>
+	<li><a href="#nsf_get_event" >int nsf_get_event(int *event, NsfntPkg *pkg);</a></li>
+	<li><a href="#nsf_event_loop" >void *nsf_event_loop(void *arg);</a></li>
+	<li><a href="#nsf_signal_handler" >void nsf_signal_handler(int signo);</a></li>
+	<li><a href="#nsf_check_exit" >int nsf_check_exit();</a></li>
+	<li><a href="#nsf_unlink_sem" >void nsf_unlink_sem();</a></li>
+</ul>
+</body>
+</html>
