@@ -64,7 +64,7 @@ int main()
 	if(nsf_config(&cfg) != 0)
 		return -1;
 		
-	init_daemon();	
+	//init_daemon();	
 	//服务器初始化
 	serverfd = nsf_server_init(cfg.port);
 	

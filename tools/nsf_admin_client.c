@@ -40,6 +40,11 @@ int main()
 			exit(0);
 		}
 		
+		if(strcmp(cmd, "quit") == 0){
+			close(nsf_client);
+			exit(0);
+		}
+		
 		if(strcmp(cmd, "state") == 0){
 			write(nsf_client, (char *)&msg, sizeof(msg));
 			memset(&msg, 0, sizeof(msg));

@@ -120,8 +120,7 @@ void nsf_srvepoll()
 						break;
 					}
 				}
-				
-				close(nsf_delete_srvepoll(events[i].events));
+				close(nsf_delete_srvepoll(events[i].data.fd));
 				continue;
 			}
 			msg.srcfd = events[i].data.fd;

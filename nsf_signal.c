@@ -38,6 +38,7 @@ void nsf_stop_sys()
 {
 	stop_flag = 1;
 }
+
 int nsf_check_exit()
 {
 	if(exit_flag == 0 || stop_flag == 1)
