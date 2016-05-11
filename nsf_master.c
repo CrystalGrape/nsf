@@ -5,11 +5,31 @@ int nsf_master_server;
 struct worker_mgr *nsf_worker_map;
 int nsf_worker_amount;
 
+struct nsf_master_module
+{
+	NsfftMsgproc cblk;
+	int state;
+}nsf_mod;
+
+int nsf_fork_amount()
+{
+	return nsf_worker_amount;
+}
+
+int nsf_register_msgproc(NsfftMsgproc cblk)
+{
+	if(nsf_mod.state == 1)
+		return 1;
+	nsf_mod.cblk = cblk;
+	nsf_mod.state = 1;
+	return 0;
+}
+
 int nsf_create_mastersrv(int core)
 {
 	struct sockaddr_in addr_s;
 	int sfd;
-	
+	nsf_mod.state = 0;
 	nsf_worker_amount = core;
 	nsf_worker_map = (struct worker_mgr *)malloc(core*sizeof(struct worker_mgr));
 	memset(nsf_worker_map, 0, core*sizeof(struct worker_mgr));
@@ -105,7 +125,12 @@ void nsf_srvepoll()
 				continue;
 			}
 			msg.srcfd = events[i].data.fd;
-			nsf_default_msgproc(msg);
+			
+			if(nsf_mod.state == 1)
+				(nsf_mod.cblk)(msg);
+			else
+				nsf_default_msgproc(msg);
+				
 			continue;
 		}
 	}
@@ -138,6 +163,15 @@ void nsf_default_msgproc(struct nsf_notification_message msg)
 			}
 		}
 		break;
+	case NM_DELUSER:
+		for(i = 0; i < nsf_worker_amount; i++){
+			if(nsf_worker_map[i].state == 1 
+			&&nsf_worker_map[i].nsf_worker_pid == msg.srcpid){
+				nsf_worker_map[i].nsf_client_amount--;
+				break;
+			}
+		}
+		break;
 	case NM_NOTICE:
 		nsf_notification(msg.destpid, msg);
 		break;
@@ -155,7 +189,8 @@ void nsf_default_msgproc(struct nsf_notification_message msg)
 		write(msg.srcfd, &msg,sizeof(msg));
 		break;
 	case NM_CLOSE:
-		nsf_notification(0, msg);
+		nsf_stop_sys();			//停止重启服务
+		kill(getpid(), SIGINT);
 		break;
 	default:
 		break;

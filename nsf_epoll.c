@@ -134,7 +134,8 @@ void nsf_epoll_loop(int listenfd, int core)
 					pkg.cfd = tmpfd;
 					pkg.msg = NE_QUIT;
 					nsf_post_event(NE_QUIT, pkg);
-    			
+					
+    				nsf_post_msg(NM_DELUSER, pkg);
     				continue;
     			}
     			//发送数据接收事件

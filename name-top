@@ -1,1 +1,0 @@
-top -p `pgrep $1 | tr "\\n" "," | sed 's/,$//'`

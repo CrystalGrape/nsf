@@ -1,4 +1,5 @@
 #include "nsf_event.h"
+#include "nsf_master.h"
 #include <stdio.h>
 void onRecv(int event,NsfntPkg pkg)
 {
@@ -14,4 +15,8 @@ void onRecv(int event,NsfntPkg pkg)
 	default:
 		break;
 	}
+}
+
+void nsf_msgproc(struct nsf_notification_message msg)
+{
 }

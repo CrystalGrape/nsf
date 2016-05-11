@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 int exit_flag = 0;
+int stop_flag = 0;
 
 void nsf_signal_handler(int signo)
 {
@@ -24,7 +25,7 @@ void nsf_signal_handler(int signo)
 		msg.message = NM_CLOSE;
 		printf("通知子进程关闭\n");
 		nsf_notification(0, msg);
-		sleep(1);
+		while(exit_flag != nsf_fork_amount());
 		exit(0);
 		break;
 	default:
@@ -33,9 +34,13 @@ void nsf_signal_handler(int signo)
 	return;
 }
 
+void nsf_stop_sys()
+{
+	stop_flag = 1;
+}
 int nsf_check_exit()
 {
-	if(exit_flag == 0)
+	if(exit_flag == 0 || stop_flag == 1)
 		return 0;
 	exit_flag--;
 	return 1;

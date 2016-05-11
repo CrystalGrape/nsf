@@ -32,7 +32,7 @@
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
+extern void nsf_master_module_init();
 void init_daemon()
 {
 	int pid;
@@ -49,14 +49,14 @@ void init_daemon()
 
 	for(i=0;i< NOFILE;++i)
 		close(i);
-	chdir("/var/");
+	chdir("/home/jay/");
 	umask(0);
 	return;
 }
 
 int main()
 {
-	//init_daemon();
+	
 	int serverfd;
 	struct nsf_config cfg;
 
@@ -64,6 +64,7 @@ int main()
 	if(nsf_config(&cfg) != 0)
 		return -1;
 		
+	init_daemon();	
 	//服务器初始化
 	serverfd = nsf_server_init(cfg.port);
 	
@@ -74,13 +75,15 @@ int main()
 	if(cfg.single){
 		if(nsf_create_mastersrv(1) < 0)
 			return 0;
-
+		nsf_master_module_init();
+		
 		if(nsf_start_worker(serverfd, 1) == 0)
 			nsf_start_master(serverfd, 1);
 	}else{
 		if(nsf_create_mastersrv(cfg.core*2) < 0)
 			return 0;
-			
+		nsf_master_module_init();
+		
 		if(nsf_start_worker(serverfd, cfg.core*2) == 0)
 			nsf_start_master(serverfd, cfg.core*2);
 	}

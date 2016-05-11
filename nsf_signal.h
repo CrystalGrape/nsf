@@ -2,4 +2,5 @@
 #define nsf_signal_h
 void nsf_signal_handler(int signo);
 int nsf_check_exit();
+void nsf_stop_sys();
 #endif
