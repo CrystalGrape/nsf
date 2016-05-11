@@ -352,5 +352,238 @@
 	<li><a href="#nsf_check_exit" >int nsf_check_exit();</a></li>
 	<li><a href="#nsf_unlink_sem" >void nsf_unlink_sem();</a></li>
 </ul>
+<br>
+<a name="nsf_event_init" id="nsf_event_init"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_event_init</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>void nsf_event_init(int core);</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>worker进程数量</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>无</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>初始化事件列表</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_register_event" id="nsf_register_event"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_register_event</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>int nsf_register_event(int event, NsfftEvent cblk);</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>事件号，事件回调函数</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>成功返回0</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>注册worker模块</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_call_event" id="nsf_call_event"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_call_event</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>int nsf_call_event(int event, NsfntPkg pkg);</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>事件号，数据包</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>成功返回0</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>调用worker模块</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_post_event" id="nsf_post_event"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_post_event</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>int nsf_post_event(int event, NsfntPkg pkg);</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>事件号，数据包</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>成功返回0</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>发送一个事件</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_get_event" id="nsf_get_event"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_get_event</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>int nsf_get_event(int *event, NsfntPkg *pkg);</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>事件号(out)，数据包(out)</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>成功返回0</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>接收一个事件</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_event_loop" id="nsf_event_loop"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_event_loop</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>void *nsf_event_loop(void *arg);</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>无含义</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>无含义</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>这是事件循环线程，用户不用涉及</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_signal_handler" id="nsf_signal_handler"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_signal_handler</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>void nsf_signal_handler(int signo);</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>信号号</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>无</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>信号处理函数</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_check_exit" id="nsf_check_exit"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_check_exit</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>int nsf_check_exit();</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>无</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>有返回1，无返回0</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>检测是否有进程退出，在有进程退出，且系统没有关闭返回1</td>
+	</tr>
+</table>
+<br>
+
+<br>
+<a name="nsf_unlink_sem" id="nsf_unlink_sem"></a>
+<table border="1">
+	<tr>
+	<td>函数名</td>
+	<td>nsf_unlink_sem</td>
+	</tr>
+	<tr>
+	<td>函数原型</td>
+	<td>void nsf_unlink_sem();</td>
+	</tr>
+	<tr>
+	<td>参数</td>
+	<td>无</td>
+	</tr>
+	<tr>
+	<td>返回值</td>
+	 <td>无</td>
+	</tr>
+	<tr>
+	<td>说明</td>
+	<td>卸载有名信号量，防止下次出错</td>
+	</tr>
+</table>
+<br>
 </body>
 </html>
