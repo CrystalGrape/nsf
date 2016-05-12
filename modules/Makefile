@@ -1,7 +1,5 @@
 INC=-I../
-all:module_init.o reply.o
-reply.o:
-	gcc -c reply.c ${INC}
+all:module_init.o
 module_init.o:
 	gcc -c module_init.c ${INC}
 clean:
