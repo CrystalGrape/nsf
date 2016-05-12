@@ -1,7 +1,6 @@
-all:talk.o
-	gcc -o avl avl.c
+all:talk.o avl.o
 	mv *.o ../
 talk.o:
 	gcc -c talk.c
-clean:
-	-rm avl
+avl.o:
+	gcc -c avl.c

@@ -1,34 +1,25 @@
-#include <stdio.h>
-#include <stdlib.h>
-#define LH	1
-#define EH	0
-#define RH -1
-
-typedef int NsfntAvldata;
-typedef int NsfntAvlkey;
-
-typedef struct avl_tree_node
-{
-	NsfntAvldata data;
-	int bf;
-	struct avl_tree_node *lchild,*rchild;
-}AVLNode,*AVLTree;
-
-int nsf_avldata_compare(NsfntAvldata front, NsfntAvldata back);
-void nsf_avltree_rrotate(AVLTree *root);
-void nsf_avltree_lrotate(AVLTree *root);
-int nsf_avltree_insert(AVLTree *tree, NsfntAvldata data, int *taller);
-void nsf_avltree_leftbalance(AVLTree *tree);
-void nsf_avltree_rightbalance(AVLTree *tree);
-NsfntAvldata *nsf_avltree_find(AVLTree root, NsfntAvldata key);
+#include "avl.h"
+#include <memory.h>
+int node_amount = 0;
+int del_node_amount = 0;
 //前面大于后面返回1，相等返回0，后面大于前面返回-1
 int nsf_avldata_compare(NsfntAvldata front, NsfntAvldata back)
 {
-	if(front > back)
-		return 1;
-	if(front == back)
+	if(strcmp(front.user_id,back.user_id) == 0)
 		return 0;
-	if(front < back)
+	if (strcmp(front.user_id,back.user_id) > 0)
+		return 1;
+	if (strcmp(front.user_id,back.user_id) < 0)
+		return -1;
+}
+
+int nsf_avldata_comparekey(NsfntAvldata front, NsfntAvlkey key)
+{
+	if(strcmp(front.user_id,key) == 0)
+		return 0;
+	if (strcmp(front.user_id,key) > 0)
+		return 1;
+	if (strcmp(front.user_id,key) < 0)
 		return -1;
 }
 
@@ -50,22 +41,32 @@ void nsf_avltree_lrotate(AVLTree *root)
 
 int nsf_avltree_insert(AVLTree *tree, NsfntAvldata data, int *taller)
 {
-	if(!(*tree)){
+	if (!(*tree)){
 		(*tree) = (AVLTree)malloc(sizeof(AVLNode));
+		(*tree)->data = data;
+		memcpy(&((*tree)->data), &data, sizeof(data));
 		(*tree)->lchild = (*tree)->rchild = NULL;
 		(*tree)->bf = EH;
+		(*tree)->del_flag = 0;
 		(*taller) = 1;
-	}else{
-		if(nsf_avldata_compare(data, (*tree)->data) == 0){
+		node_amount++;
+	}
+	else{
+		if (nsf_avldata_compare(data, (*tree)->data) == 0){
+			if((*tree)->del_flag == 1)
+				del_node_amount--;
+			//已有节点，重新更新
+			memcpy(&((*tree)->data), &data, sizeof(data));
+			(*tree)->del_flag = 0;
 			(*taller) = 0;
 			return 0;
 		}
-		
-		if(nsf_avldata_compare(data, (*tree)->data) < 0){
-			if(!nsf_avltree_insert(&((*tree)->lchild), data, taller))
+
+		if (nsf_avldata_compare(data, (*tree)->data) < 0){
+			if (!nsf_avltree_insert(&((*tree)->lchild), data, taller))
 				return 0;
-			if((*taller)){
-				switch((*tree)->bf){
+			if ((*taller)){
+				switch ((*tree)->bf){
 				case LH:
 					nsf_avltree_leftbalance(tree);
 					(*taller) = 0;
@@ -81,20 +82,21 @@ int nsf_avltree_insert(AVLTree *tree, NsfntAvldata data, int *taller)
 				}
 			}
 		}else{
-			if(!nsf_avltree_insert(&((*tree)->rchild), data, taller))
+			if (!nsf_avltree_insert(&((*tree)->rchild), data, taller))
 				return 0;
-			if((*taller)){
-				switch((*tree)->bf){
+			if ((*taller)){
+				switch ((*tree)->bf){
 				case LH:
 					(*tree)->bf = EH;
 					(*taller) = 0;
 					break;
 				case EH:
 					(*tree)->bf = RH;
-					(*taller) =1;
+					(*taller) = 1;
 					break;
 				case RH:
 					nsf_avltree_rightbalance(tree);
+					(*taller) = 0;
 					break;
 				}
 			}
@@ -105,9 +107,9 @@ int nsf_avltree_insert(AVLTree *tree, NsfntAvldata data, int *taller)
 
 void nsf_avltree_leftbalance(AVLTree *tree)
 {
-	AVLNode *lc =  (*tree)->lchild;
+	AVLNode *lc = (*tree)->lchild;
 	AVLNode *rd;
-	switch(lc->bf){
+	switch (lc->bf){
 	case LH:
 		lc->bf = EH;
 		(*tree)->bf = lc->bf;
@@ -115,7 +117,7 @@ void nsf_avltree_leftbalance(AVLTree *tree)
 		break;
 	case RH:
 		rd = lc->rchild;
-		switch(rd->bf){
+		switch (rd->bf){
 		case LH:
 			(*tree)->bf = RH;
 			lc->bf = EH;
@@ -125,7 +127,7 @@ void nsf_avltree_leftbalance(AVLTree *tree)
 			(*tree)->bf = lc->bf;
 			break;
 		case RH:
-			(*tree)->bf =EH;
+			(*tree)->bf = EH;
 			lc->bf = LH;
 			break;
 		}
@@ -140,8 +142,8 @@ void nsf_avltree_rightbalance(AVLTree *tree)
 {
 	AVLNode *rc = (*tree)->rchild;
 	AVLNode *rl;
-	
-	switch(rc->bf){
+
+	switch (rc->bf){
 	case RH:
 		rc->bf = EH;
 		(*tree)->bf = rc->bf;
@@ -149,9 +151,9 @@ void nsf_avltree_rightbalance(AVLTree *tree)
 		break;
 	case LH:
 		rl = rc->lchild;
-		switch(rl->bf){
+		switch (rl->bf){
 		case LH:
-			(*tree)->bf=EH;
+			(*tree)->bf = EH;
 			rc->bf = RH;
 			break;
 		case EH:
@@ -159,7 +161,7 @@ void nsf_avltree_rightbalance(AVLTree *tree)
 			(*tree)->bf = rc->bf;
 			break;
 		case RH:
-			(*tree)->bf=LH;
+			(*tree)->bf = LH;
 			rc->bf = EH;
 			break;
 		}
@@ -169,51 +171,85 @@ void nsf_avltree_rightbalance(AVLTree *tree)
 		break;
 	}
 }
-int times;
-NsfntAvldata *nsf_avltree_find(AVLTree root, NsfntAvldata key)
+
+int nsf_avltree_del(AVLTree root, NsfntAvlkey key)
 {
-	times++;
-    if (root == NULL)   
-    {
-        return NULL;  
-    } 
-      
-    if (root->data == key)   
-    {  
-    	printf("121312\n");
-        return &(root->data);  
-    }  
-    else if (key < root->data)   
-    {  
-        return nsf_avltree_find(root->lchild, key);  
-    }   
-    else   
-    {  
-        return nsf_avltree_find(root->rchild, key);  
-    }  
+	if (root == NULL)
+		return 0;
+	if(root->del_flag == 1)
+		return 0;
+	if (nsf_avldata_comparekey(root->data, key) == 0)
+	{
+		root->del_flag =1;
+		del_node_amount++;
+		return 1;
+	}
+	else if (nsf_avldata_comparekey(root->data, key) > 0)
+	{
+		return nsf_avltree_del(root->lchild, key);
+	}
+	else
+	{
+		return nsf_avltree_del(root->rchild, key);
+	}
 }
 
+NsfntAvldata *nsf_avltree_find(AVLTree root, NsfntAvlkey key)
+{
+	if (root == NULL)
+		return NULL;
+	if (nsf_avldata_comparekey(root->data, key) == 0)
+		return &(root->data);
+	else if (nsf_avldata_comparekey(root->data, key) > 0)
+		return nsf_avltree_find(root->lchild, key);
+	else
+		return nsf_avltree_find(root->rchild, key);
+}
+
+void nsf_avltree_rebuild(AVLTree *root, AVLTree *newtree)
+{
+	int taller = 0; 
+	if(NULL != (*root))
+	{
+		nsf_avltree_rebuild(&(*root)->lchild, newtree);
+		nsf_avltree_rebuild(&(*root)->rchild, newtree);
+		if((*root)->del_flag == 0)
+			nsf_avltree_insert(newtree, (*root)->data, &taller);
+		free((*root));
+	}
+}
+
+/*
 int main()
 {
 	int i;
+	int taller;
+	char user[32];
 	AVLTree tree = NULL;
-	int taller = 0;
-	NsfntAvldata dt;
-	NsfntAvldata *ret;
-	
+	NsfntAvldata *dt;
+	struct nsf_user_map ump;
 	for(i = 0; i < 1000; i++){
-		nsf_avltree_insert(&tree, i, &taller);
+		memset(&ump,0,sizeof(ump));
+		sprintf(ump.user_id, "%010d",i);
+		ump.clt_fd = i;
+		nsf_avltree_insert(&tree, ump, &taller);
 	}
-	printf("可以开始查找了\n");
+	
+	printf("可以查询了\n");
 	while(1)
 	{
-		times = 0;
-		scanf("%d", &dt);
-		ret = nsf_avltree_find(tree, dt);
-		if(ret == NULL)
-			printf("未找到\n");
+		scanf("%s", user);
+		dt = nsf_avltree_find(tree, user);
+		if (dt == NULL)
+			printf("no find\n");
 		else
-			printf("找到了%d\n", *ret);
-		printf("查找次数%d\n", times);
+		{
+			printf("find:%d\n", dt->clt_fd);
+			nsf_avltree_del(tree, user);
+			AVLTree newtree = NULL;
+			nsf_avltree_rebuild(&tree, &newtree);
+			tree = newtree;
+		}
 	}
-}	
+}
+*/
