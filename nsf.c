@@ -49,7 +49,7 @@ void init_daemon()
 
 	for(i=0;i< NOFILE;++i)
 		close(i);
-	chdir("/home/jay/");
+	chdir("/var");
 	umask(0);
 	return;
 }
@@ -59,12 +59,12 @@ int main()
 	
 	int serverfd;
 	struct nsf_config cfg;
-
+	
 	//读取配置文件
 	if(nsf_config(&cfg) != 0)
 		return -1;
 		
-	//init_daemon();	
+	init_daemon();	
 	//服务器初始化
 	serverfd = nsf_server_init(cfg.port);
 	

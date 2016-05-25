@@ -1,8 +1,8 @@
 INC=-I../
-all:module_init.o
+all:module_init.o talksrv
 module_init.o:
 	gcc -c module_init.c ${INC}
 talksrv:
-	cd talkserver&&make
+	make -C talkserver
 clean:
 	-rm *.o
