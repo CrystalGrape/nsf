@@ -2,6 +2,8 @@
 #include <memory.h>
 int node_amount = 0;
 int del_node_amount = 0;
+int del_filedesc[500];
+int del_filedesc_amount=0;
 //前面大于后面返回1，相等返回0，后面大于前面返回-1
 int nsf_avldata_compare(NsfntAvldata front, NsfntAvldata back)
 {
@@ -219,37 +221,41 @@ void nsf_avltree_rebuild(AVLTree *root, AVLTree *newtree)
 	}
 }
 
-/*
-int main()
+void nsf_avltree_rebuilt(AVLTree *root, AVLTree *newtree)
 {
+	int taller = 0; 
 	int i;
-	int taller;
-	char user[32];
-	AVLTree tree = NULL;
-	NsfntAvldata *dt;
-	struct nsf_user_map ump;
-	for(i = 0; i < 1000; i++){
-		memset(&ump,0,sizeof(ump));
-		sprintf(ump.user_id, "%010d",i);
-		ump.clt_fd = i;
-		nsf_avltree_insert(&tree, ump, &taller);
-	}
-	
-	printf("可以查询了\n");
-	while(1)
+	int flag;
+	if(NULL != (*root))
 	{
-		scanf("%s", user);
-		dt = nsf_avltree_find(tree, user);
-		if (dt == NULL)
-			printf("no find\n");
-		else
-		{
-			printf("find:%d\n", dt->clt_fd);
-			nsf_avltree_del(tree, user);
-			AVLTree newtree = NULL;
-			nsf_avltree_rebuild(&tree, &newtree);
-			tree = newtree;
+		nsf_avltree_rebuilt(&(*root)->lchild, newtree);
+		nsf_avltree_rebuilt(&(*root)->rchild, newtree);
+		
+		flag = 0;
+		for(i = 0; i < 500; i++){
+			if(del_filedesc[i] == (*root)->data.clt_fd){
+				flag = 1;
+				break;
+			}
 		}
+		if(flag == 0)
+			nsf_avltree_insert(newtree, (*root)->data, &taller);
+		free((*root));
 	}
 }
-*/
+
+int nsf_avltree_scale()
+{
+	if(del_node_amount == 0)
+		return 1;
+	return (node_amount/del_node_amount);
+}
+
+int nsf_avltree_delfd(int fd)
+{
+	del_filedesc[del_filedesc_amount] = fd;
+	del_filedesc_amount++;
+	if(del_filedesc_amount == 500)
+		return 1;
+	return 0;
+}

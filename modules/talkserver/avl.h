@@ -27,4 +27,7 @@ void nsf_avltree_leftbalance(AVLTree *tree);
 void nsf_avltree_rightbalance(AVLTree *tree);
 NsfntAvldata *nsf_avltree_find(AVLTree root, NsfntAvlkey key);
 int nsf_avltree_del(AVLTree root, NsfntAvlkey key);
+int nsf_avltree_delfd(int fd);
+int nsf_avltree_scale();
+void nsf_avltree_rebuilt(AVLTree *root, AVLTree *newtree);
 #endif
