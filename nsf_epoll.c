@@ -175,6 +175,8 @@ void nsf_start_epoll(int sfd, int core)
 		prctl(PR_SET_NAME, "nsf_worker", NULL, NULL, NULL);
 		nsf_event_init(core);
 		nsf_module_init();
+		NsfntPkg pkg;
+		nsf_post_event(NE_INIT, pkg);
 		nsf_epoll_loop(sfd, core);
 		exit(0);
 	}

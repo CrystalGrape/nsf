@@ -6,6 +6,7 @@
 #define NE_ACPT					0
 #define NE_RECV					1
 #define NE_QUIT					2
+#define NE_INIT					3
 
 #define BUFFER_LEN				2048
 #pragma pack(push)
