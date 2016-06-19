@@ -26,6 +26,7 @@ void nsf_default_workerproc(struct nsf_notification_message msg)
 	switch(msg.message)
 	{
 	case NM_NOTICE:
+		msg.pkg.msg=NM_NOTICE;
 		nsf_post_event(NE_RECV, msg.pkg);
 		break;
 	case NM_CLOSE:

@@ -1,5 +1,5 @@
-LD=-lpthread
-DEBUG = -g
+LD=-lpthread -lcjson -lm
+DEBUG =
 all:nsf.o nsf_config.o nsf_signal.o nsf_epoll.o nsf_event.o nsf_master.o nsf_worker.o module tool
 	gcc $(DEBUG) -o nsf *.o modules/*.o ${LD}
 nsf.o:

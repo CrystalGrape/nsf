@@ -1,0 +1,1 @@
+select * from node_info -u root -p inameJay gcsj

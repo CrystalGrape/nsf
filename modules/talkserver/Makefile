@@ -1,4 +1,4 @@
-all:talk.o avl.o
+all:talk.o
 	mv *.o ../
 talk.o:
 	gcc -c talk.c
