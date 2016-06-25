@@ -6,6 +6,7 @@
 #include <time.h>
 #include <stdio.h>
 //全局变量区
+pthread_mutex_t event_mutex;					 //事件互斥量
 NsfntEvent event_list[EVENT_AMOUNT];
 struct msg_queue
 {
@@ -51,6 +52,7 @@ void nsf_event_init(int core)
 	sem_init(&(mq.mq_sem),0,0);			//信号灯初始化为0
 	pthread_mutex_init(&(mq.msg_mutex),NULL);
 	pthread_mutex_init(&(mq.sem_mutex),NULL);
+	pthread_mutex_init(&event_mutex,NULL);
 	
 	for(i = 0; i < core; i++){
 		pthread_t tid;
@@ -77,22 +79,51 @@ int nsf_register_event(int event, NsfftEvent cblk)
 	return 0;
 }
 
+//释放所有事件
+void nsf_free_event()
+{
+	int i;
+	
+	struct nsf_event_node *front;
+	struct nsf_event_node *next;
+	pthread_mutex_lock(&event_mutex);
+	for(i = 0; i < EVENT_AMOUNT;i++){
+		if(event_list[i].amount == 0)
+			continue;
+		front = event_list[i].ptr_event_list;
+		while(event_list[i].amount)
+		{
+			next = front->ptr_next;
+			free(front);
+			front = next;
+			event_list[i].amount--;
+		}
+		event_list[i].ptr_event_list = NULL;
+	}
+	pthread_mutex_unlock(&event_mutex);
+}
+
 //调用事件回调函数
 int nsf_call_event(int event, NsfntPkg pkg)
 {
 	int i;
 	struct nsf_event_node *ptr;
-	if(event < 0 || event >= EVENT_AMOUNT)
+	pthread_mutex_lock(&event_mutex);
+	if(event < 0 || event >= EVENT_AMOUNT){
+		pthread_mutex_unlock(&event_mutex);
 		return -1;
-	if(event_list[event].amount == 0)
+	}
+	if(event_list[event].amount == 0){
+		pthread_mutex_unlock(&event_mutex);
 		return -2;
+	}
 	ptr = event_list[event].ptr_event_list;
 
 	for(i = 0; i < event_list[event].amount; i++){
 		(ptr->nevent)(event,pkg);
 		ptr = ptr->ptr_next;
 	}
-
+	pthread_mutex_unlock(&event_mutex);
 	return 0;
 }
 

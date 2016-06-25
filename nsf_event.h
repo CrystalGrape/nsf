@@ -44,6 +44,7 @@ struct msg_node
 };
 
 void nsf_event_init(int core);
+void nsf_free_event();
 int nsf_register_event(int event, NsfftEvent cblk);
 int nsf_call_event(int event, NsfntPkg pkg);
 int nsf_post_event(int event, NsfntPkg pkg);

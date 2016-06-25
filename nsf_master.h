@@ -21,6 +21,7 @@
 #define NM_ADDUSER	104
 #define NM_DELUSER	105
 #define NM_CMD		106
+#define NM_REMOD	107
 
 #pragma pack(push)
 #pragma pack(1)

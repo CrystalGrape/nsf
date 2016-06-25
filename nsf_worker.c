@@ -1,4 +1,5 @@
 #include "nsf_master.h"
+#include "module.h"
 
 int nsf_worker_client;
 
@@ -22,7 +23,6 @@ int nsf_create_workerclt()
 
 void nsf_default_workerproc(struct nsf_notification_message msg)
 {
-	int i;
 	switch(msg.message)
 	{
 	case NM_NOTICE:
@@ -32,6 +32,9 @@ void nsf_default_workerproc(struct nsf_notification_message msg)
 	case NM_CLOSE:
 		close(nsf_worker_client);
 		exit(0);
+		break;
+	case NM_REMOD:
+		nsf_workermodule_reload();
 		break;
 	default:
 		break;

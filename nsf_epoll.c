@@ -15,8 +15,8 @@ sem_t *sem;     	//监听套接字互斥信号量
 sem_t *sem_write;	//共享互斥信号量
 int shmid;      	//共享内存id
 int epollfd;		//epoll套接字集合
+extern void nsf_workermodule_init();
 
-extern void nsf_module_init(); 
 /*设置套接字非阻塞*/
 int setnoblocking(int fd)
 {
@@ -63,8 +63,9 @@ void nsf_epoll_loop(int listenfd, int core)
 	struct nsf_notification_message msg;
 	
 	noticefd = nsf_create_workerclt();
-	if(noticefd < 0)
+	if(noticefd < 0){
 		exit(0);
+	}
 	epollfd=epoll_create(MAXFD);
 	nsf_add_epoll(noticefd);
 	
@@ -82,15 +83,19 @@ void nsf_epoll_loop(int listenfd, int core)
 		}
 		
     	int nfds = epoll_wait(epollfd, events, MAXEVENTS, 200);
+
     	for(i = 0; i < nfds; i++){
     		if(noticefd == events[i].data.fd){
     			memset(&msg, 0, sizeof(msg));
     			len=read(noticefd,&msg,sizeof(msg));
-    			if(len < 0)
+    			if(len <= 0){
+    				sleep(200);
     				continue;
+    			}
     			nsf_default_workerproc(msg);
     			continue;
     		}
+
     		//有客户端链接
     		if(listenfd==events[i].data.fd){
     			memset(&pkg, 0, sizeof(pkg));
@@ -147,6 +152,15 @@ void nsf_epoll_loop(int listenfd, int core)
     			continue;
     		}
     	}
+    	/*
+    	memset(&msg, 0, sizeof(msg));
+		len=read(noticefd,&msg,sizeof(msg));
+		if(len <= 0){
+			continue;
+		}
+		printf("msg:%d\n",msg.message);
+		nsf_default_workerproc(msg);
+		*/
     }
 }
 
@@ -174,7 +188,7 @@ void nsf_start_epoll(int sfd, int core)
 		nsf_close_mastersrv();
 		prctl(PR_SET_NAME, "nsf_worker", NULL, NULL, NULL);
 		nsf_event_init(core);
-		nsf_module_init();
+		nsf_workermodule_init();
 		NsfntPkg pkg;
 		nsf_post_event(NE_INIT, pkg);
 		nsf_epoll_loop(sfd, core);

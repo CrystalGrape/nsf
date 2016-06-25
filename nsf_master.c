@@ -1,11 +1,11 @@
 #include "nsf_master.h"
-//守护进程服务器
-int nsf_srv_epoll;		//epoll套接字集合 
-int nsf_master_server;
-struct worker_mgr *nsf_worker_map;
-int nsf_worker_amount;
 
-struct nsf_master_module
+//守护进程服务器
+static int nsf_srv_epoll;		//epoll套接字集合 
+static int nsf_master_server;
+static struct worker_mgr *nsf_worker_map;
+static int nsf_worker_amount;
+static struct nsf_master_module
 {
 	NsfftMsgproc cblk;
 	int state;
@@ -62,9 +62,9 @@ void nsf_notification(int pid, struct nsf_notification_message msg)
 {
 	int i;
 	for(i = 0; i < nsf_worker_amount; i++){
-		if(nsf_worker_map[i].state != 0
-		&&nsf_worker_map[i].nsf_worker_pid == pid
-		||pid == 0){
+		if((nsf_worker_map[i].state != 0)
+		&&(nsf_worker_map[i].nsf_worker_pid == pid
+		||pid == 0)){
 			write(nsf_worker_map[i].nsf_worker_client, (char *)&msg, sizeof(msg));
 		}
 	}
@@ -114,7 +114,7 @@ void nsf_srvepoll()
 			int len=read(events[i].data.fd,&msg,sizeof(msg));
 			if(len <= 0)
 			{
-				for(loop == 0; loop < nsf_worker_amount; loop++){
+				for(loop = 0; loop < nsf_worker_amount; loop++){
 					if(events[loop].data.fd == nsf_worker_map[loop].nsf_worker_client){
 						memset(&nsf_worker_map[loop], 0, sizeof(struct worker_mgr));
 						break;
@@ -125,13 +125,13 @@ void nsf_srvepoll()
 			}
 			msg.srcfd = events[i].data.fd;
 			
-			if(nsf_mod.state == 1)
+			if(nsf_mod.state == 1){
 				(nsf_mod.cblk)(msg);
-			else
-				nsf_default_msgproc(msg);
-				
+			}
+			nsf_default_msgproc(msg);
 			continue;
 		}
+		
 	}
 }
 
@@ -182,10 +182,16 @@ void nsf_default_msgproc(struct nsf_notification_message msg)
 				state[i*2] = nsf_worker_map[i].nsf_worker_pid;
 				state[i*2+1] = nsf_worker_map[i].nsf_client_amount;
 			}
+			memcpy(msg.pkg.data, state, 2*nsf_worker_amount*sizeof(int));
+			msg.pkg.datalen=2*nsf_worker_amount*sizeof(int);
+			write(msg.srcfd, &msg,sizeof(msg));
 		}
-		memcpy(msg.pkg.data, state, 2*nsf_worker_amount*sizeof(int));
-		msg.pkg.datalen=2*nsf_worker_amount*sizeof(int);
-		write(msg.srcfd, &msg,sizeof(msg));
+
+		if(strcmp(cmd, "remod") == 0)
+		{
+			msg.message = NM_REMOD;
+			nsf_notification(0, msg);
+		}
 		break;
 	case NM_CLOSE:
 		nsf_stop_sys();			//停止重启服务

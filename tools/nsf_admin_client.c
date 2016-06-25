@@ -18,20 +18,32 @@ int nsf_create_adminclt()
 	return lfd;
 }
 
+void parse_cmd(const char *str, char *cmd, char *arg)
+{
+	sscanf(str,"%s %s", cmd, arg);
+}
+
 int main()
 {
 	int i;
 	int len;
-	char cmd[20];
+	char input[40];
+	char cmd[10];
+	char varg[30];
 	int nsf_client = nsf_create_adminclt();
 	struct nsf_notification_message msg;
 	while(1){
 		memset(&msg, 0, sizeof(msg));
 		msg.message = NM_CMD;
-		printf("nsf>:");
-		scanf("%s", cmd);
+		printf("nsf>:");	
+		scanf("%s",cmd);
+		//scanf("%[^\n]%*c", input);
 		memcpy(msg.pkg.data, cmd, strlen(cmd));
 		msg.pkg.datalen = strlen(cmd);
+		//parse_cmd(input,cmd, varg);
+
+		//printf("cmd:%s\narg:%s\n",cmd,varg);
+		//scanf("%s", cmd);
 		if(strcmp(cmd, "stop") == 0){
 			msg.message = NM_CLOSE;
 			write(nsf_client, (char *)&msg, sizeof(msg));
@@ -52,6 +64,12 @@ int main()
 			for(i = 0;i < msg.pkg.datalen/(sizeof(int)*2); i++){
 				printf("pid[%d]\t\t%d\n", ((int *)msg.pkg.data)[i*2],((int *)msg.pkg.data)[i*2+1]);
 			}
+		}
+
+
+		if(strcmp(cmd, "remod") == 0)
+		{
+			write(nsf_client, (char *)&msg, sizeof(msg));
 		}
 	}
 }

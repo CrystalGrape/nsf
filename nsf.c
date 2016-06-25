@@ -32,17 +32,18 @@
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-extern void nsf_master_module_init();
+
+extern void nsf_mastermodule_init();
 void init_daemon()
 {
 	int pid;
 	int i;
-	if(pid=fork())
+	if((pid=fork()))
 		exit(0);
 	else if(pid< 0)
 		exit(1);
 	setsid();
-	if(pid=fork())
+	if((pid=fork()))
 		exit(0);
 	else if(pid< 0)
 		exit(1);
@@ -75,15 +76,16 @@ int main()
 	if(cfg.single){
 		if(nsf_create_mastersrv(1) < 0)
 			return 0;
-		nsf_master_module_init();
 		
+		nsf_mastermodule_init();
 		if(nsf_start_worker(serverfd, 1) == 0)
 			nsf_start_master(serverfd, 1);
 	}else{
-		if(nsf_create_mastersrv(cfg.core*2) < 0)
+		if(nsf_create_mastersrv(cfg.core*2) <= 0){
 			return 0;
-		nsf_master_module_init();
+		}
 		
+		nsf_mastermodule_init();
 		if(nsf_start_worker(serverfd, cfg.core*2) == 0)
 			nsf_start_master(serverfd, cfg.core*2);
 	}

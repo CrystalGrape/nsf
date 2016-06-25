@@ -1,4 +1,5 @@
 #include "nsf_config.h"
+#include <string.h>
 
 int nsf_config(struct nsf_config *config)
 {

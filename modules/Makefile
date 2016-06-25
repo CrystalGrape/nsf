@@ -1,10 +1,12 @@
-INC=-I../
-all:module_init.o talksrv
-module_init.o:
-	gcc -c module_init.c ${INC}
-talksrv:
-	make -C talkserver
-nsql:
-	make -C sql
+all:master talkserver
+.PHONY:master talkserver
+master:
+	make -C master/
+.PHONY:talkserver
+talkserver:
+	make -C talkserver/
+.PHONY:clean
 clean:
-	-rm *.o
+	make -C master/ clean
+	make -C talkserver/ clean
+	-rm *.so
