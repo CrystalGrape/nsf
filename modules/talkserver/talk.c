@@ -1,5 +1,7 @@
 #include "module.h"
 #include <stdio.h>
+#define NM_USER_TEST	130
+#define NE_USER_PRINT	30
 static WINSTANCE wInstance;
 EVENT_START(NE_ACPT),
 	EVENT(NE_RECV),
@@ -21,8 +23,12 @@ void worker_proc(int event, NsfntPkg pkg)
 	case NE_ACPT:
 		printf("someone client online\n");
 		break;
-	case NE_RECV:
+	case NE_RECV:	
 		write(pkg.cfd, pkg.data, pkg.datalen);
+		if(pkg.msg != NM_USER_TEST){
+			wInstance.nsf_post_msg(NM_USER_TEST, pkg);
+		}
+		wInstance.nsf_post_event(NE_USER_PRINT, pkg);
 		break;
 	case NE_QUIT:
 		printf("someone client quit\n");

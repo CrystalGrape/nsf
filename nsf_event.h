@@ -8,7 +8,7 @@
 #define NE_QUIT					2
 #define NE_INIT					3
 
-#define BUFFER_LEN				2048
+#define BUFFER_LEN				8096
 #pragma pack(push)
 #pragma pack(1)
 typedef struct

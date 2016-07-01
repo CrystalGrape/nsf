@@ -65,7 +65,8 @@ void nsf_notification(int pid, struct nsf_notification_message msg)
 		if((nsf_worker_map[i].state != 0)
 		&&(nsf_worker_map[i].nsf_worker_pid == pid
 		||pid == 0)){
-			write(nsf_worker_map[i].nsf_worker_client, (char *)&msg, sizeof(msg));
+			if(msg.srcpid != nsf_worker_map[i].nsf_worker_pid)
+				write(nsf_worker_map[i].nsf_worker_client, (char *)&msg, sizeof(msg));
 		}
 	}
 }

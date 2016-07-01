@@ -80,7 +80,7 @@ void nsf_workermodule_reload()
 	if(plg_amount != 0){						//如果已经存在插件，先释放所有事件
 		nsf_free_event();
 		for(i = 0; i < plg_amount; i++){
-			dlclose(plg_handle_list[i]);		//关闭所有插件
+			dlclose(plg_handle_list[i]);			//关闭所有插件
 		}
 		plg_amount = 0;
 	}

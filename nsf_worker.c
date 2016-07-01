@@ -37,6 +37,8 @@ void nsf_default_workerproc(struct nsf_notification_message msg)
 		nsf_workermodule_reload();
 		break;
 	default:
+		msg.pkg.msg = msg.message;
+		nsf_post_event(NE_RECV, msg.pkg);
 		break;
 	}
 }
