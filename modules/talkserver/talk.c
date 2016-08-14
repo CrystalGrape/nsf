@@ -12,6 +12,7 @@ EVENT_END();
 void worker_init(WINSTANCE w)
 {
 	memcpy(&wInstance,&w,sizeof(w));
+	printf("hello lua!\n");
 }
 
 void worker_proc(int event, NsfntPkg pkg)

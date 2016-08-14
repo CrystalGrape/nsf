@@ -10,6 +10,9 @@ all:$(C_OBJECTS) link
 	$(CC) $(C_FLAGS) $< -o $@
 link:
 	$(CC) $(C_OBJECTS) -o $(GOAL) $(LD_LIBARY)
+.PHONY:module
+module:
+	make -C modules/
 
 .PHONY:tools
 tools:
