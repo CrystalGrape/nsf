@@ -2,7 +2,7 @@ C_SOURCES = $(shell ls *.c)
 C_OBJECTS = $(patsubst %.c, %.o, $(C_SOURCES))
 CC = gcc
 LD_LIBARY = -lpthread -lcjson -lm -ldl
-C_FLAGS = -c -Wall -I../
+C_FLAGS = -g -c -Wall -I../
 GOAL	= nsf
 
 all:$(C_OBJECTS) link

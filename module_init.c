@@ -94,13 +94,14 @@ void nsf_workermodule_reload()
 		fscanf(fp,"%s %s", type, path);
 		if(strcmp(type, "worker") == 0)
 		{
-			printf("[%d]:load plugin %s amount %d\n",getpid(), path, plg_amount);
+			//printf("[%d]:load plugin %s amount %d\n",getpid(), path, plg_amount);
 			plg_handle_list[plg_amount] = nsf_load_module(path);
 			if(plg_handle_list[plg_amount] != NULL)
 				plg_amount++;
 		}
 	}
 	fclose(fp);
+	printf("[%d]:reload module!\n", getpid());
 }
 
 void nsf_workermodule_init()

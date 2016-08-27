@@ -2,7 +2,7 @@ C_SOURCES = $(shell find . -name "*.c")
 C_OBJECTS = $(patsubst %.c, %.o, $(C_SOURCES))
 CC = gcc
 LD = ld
-C_FLAGS = -c -Wall -fPIC -I../../
+C_FLAGS = -g -c -Wall -fPIC -I../../
 LD_FLAGS = -shared -fPIC
 GOAL	= libhttp.so
 
