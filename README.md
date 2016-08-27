@@ -11,3 +11,7 @@ nsf_epoll.c：将epoll套接字设置为全局变量，改变了对epoll套接�
 在各个工作进程间进行通信，同时提供了一些管理服务器的借口，可以通过tools下的  
 nsf_admin_client管理服务器。  
 修复了nsf_admin_client连接一次退出后主进程进入死循环的BUG
+##v4.0.0改动
+增加http模块
+##v4.0.1改动
+修改http模块，修复了404后工作进程崩溃的问题
